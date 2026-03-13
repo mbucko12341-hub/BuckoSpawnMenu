@@ -1,5 +1,6 @@
 
-<img width="1890" height="1417" alt="BuckoMapping" src="https://github.com/user-attachments/assets/6a343c5c-339f-4733-be76-a41c925a6b83" />
+<img width="1196" height="896" alt="bucko" src="https://github.com/user-attachments/assets/61c2f34b-2265-41b3-b282-d09366aec528" />
+
 
 join the discord today for mapping help  https://discord.gg/N2YWYM4u82
 

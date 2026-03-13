@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spawn Menu - Sidebar Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { font-family: 'Poppins', sans-serif; display: none; height: 100vh; width: 100vw; background: transparent; overflow: hidden; }
+
+        .sidebar {
+            position: absolute; left: -400px; top: 0; height: 100vh; width: 380px;
+            background: linear-gradient(180deg, rgba(15, 15, 20, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%);
+            border-right: 3px solid #3498db; box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+            padding: 60px 40px; display: flex; flex-direction: column;
+            animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn { to { left: 0; } }
+
+        .header { margin-bottom: 40px; }
+        .header h1 { font-weight: 700; font-size: 32px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+        .header h1 span { color: #3498db; }
+        .header p { font-size: 13px; font-weight: 300; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 1px; }
+
+        .location-list { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 10px; flex-grow: 1; }
+        .location-list::-webkit-scrollbar { width: 4px; }
+        .location-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+
+        .loc-wrapper { display: flex; gap: 8px; width: 100%; }
+
+        .spawn-btn {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); color: #ccc;
+            font-family: inherit; font-size: 15px; font-weight: 500; padding: 16px 20px; border-radius: 6px;
+            cursor: pointer; text-align: left; transition: all 0.2s ease; flex-grow: 1;
+        }
+        .spawn-btn:hover { background: rgba(52, 152, 219, 0.1); border-color: #3498db; color: #fff; padding-left: 25px; }
+
+        .delete-btn {
+            background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c;
+            font-family: inherit; font-size: 16px; font-weight: 700; width: 45px; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center;
+        }
+        .delete-btn:hover { background: rgba(231, 76, 60, 0.8); color: white; }
+
+        .last-loc-btn { 
+            background: rgba(46, 204, 113, 0.05); 
+            border: 1px solid rgba(46, 204, 113, 0.3); 
+            color: #2ecc71; 
+            margin-bottom: 15px; 
+            width: 100%;
+            flex-grow: 0; 
+            flex-shrink: 0; 
+        }
+        .last-loc-btn:hover { background: rgba(46, 204, 113, 0.15); border-color: #2ecc71; color: #fff; }
+
+        .footer-decoration { margin-top: auto; height: 2px; width: 50px; background: rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="header">
+            <h1>Spawn<span>Menu</span></h1>
+            <p>Select a location to spawn at.</p>
+        </div>
+        <div class="location-list" id="button-container"></div>
+        <div class="footer-decoration"></div>
+    </div>
+
+    <script>
+        const container = document.getElementById('button-container');
+
+        function buildLocations(locations, lastLocation) {
+            container.innerHTML = ''; 
+            
+            if (lastLocation) {
+                const lastLocBtn = document.createElement('button');
+                lastLocBtn.className = 'spawn-btn last-loc-btn';
+                lastLocBtn.innerHTML = "<strong>📍 Last Location</strong>";
+                lastLocBtn.addEventListener('click', function() {
+                    document.body.style.display = "none";
+                    fetch(`https://${GetParentResourceName()}/spawnPlayer`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(lastLocation)
+                    });
+                });
+                container.appendChild(lastLocBtn);
+            }
+
+            locations.forEach(loc => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'loc-wrapper';
+
+                const btn = document.createElement('button');
+                btn.className = 'spawn-btn';
+                btn.innerText = "🗺️ " + loc.name;
+                btn.addEventListener('click', function() {
+                    document.body.style.display = "none"; 
+                    fetch(`https://${GetParentResourceName()}/spawnPlayer`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ x: loc.x, y: loc.y, z: loc.z, h: loc.h })
+                    });
+                });
+
+                wrapper.appendChild(btn);
+
+                if (!loc.locked) {
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'delete-btn';
+                    delBtn.innerText = '×';
+                    delBtn.title = "Delete Location";
+                    delBtn.addEventListener('click', function(event) {
+                        event.stopPropagation(); 
+                        fetch(`https://${GetParentResourceName()}/deleteLocation`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: loc.name })
+                        });
+                    });
+                    wrapper.appendChild(delBtn);
+                }
+
+                container.appendChild(wrapper);
+            });
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data.type === "openSpawnMenu") {
+                document.body.style.display = "block";
+                buildLocations(event.data.locations, event.data.lastLocation);
+            } else if (event.data.type === "refreshLocations") {
+                buildLocations(event.data.locations, null);
+            }
+        });
+    </script>
+</body>
+</html>

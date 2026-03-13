@@ -39,6 +39,6 @@ Add ensure spawnmenu to your server.cfg.
 Start your server.
 
 💻 Commands
-/testspawn - Opens the menu manually for testing purposes.
+/spawn - Opens the menu manually.
 
 /addspawn [Location Name] - Grabs your current X, Y, Z, and Heading, saves it to locations.json, and instantly updates the menu for all players. (Example: /addspawn Paleto Police Station)

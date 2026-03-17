@@ -7,7 +7,7 @@ join the discord today for mapping help  https://discord.gg/N2YWYM4u82
 ====================================================
 
 Advanced Standalone Spawn Menu
-A lightweight, beautifully designed, completely standalone spawn menu for FiveM roleplay servers. Designed to integrate perfectly into a modern, "fully stacked" UI/HUD environment without relying on heavy frameworks like ESX or QBCore.
+A lightweight, beautifully designed, completely standalone spawn menu for FiveM dev servers. Designed to integrate perfectly into a modern, "fully stacked" UI/HUD environment without relying on heavy frameworks like ESX or QBCore.
 
 ✨ Features
 Completely Standalone: No framework dependencies. Runs purely on FiveM natives and NUI.
